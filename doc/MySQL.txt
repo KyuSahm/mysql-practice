@@ -1,0 +1,137 @@
+1. MySQL 서버 설치하기
+1) 사이트 접속
+- https://www.mysql.com/ 
+2) "Downloads" 탭 클릭
+3) "MySQL Community (GPL) Downloads »" 클릭
+4) "MySQL Community Server" 클릭
+5) Installer Version(msi) 선택
+6) 오라클 계정 로그인 후, 다운로드
+7) Installer 실행
+8) "Developer Default"선택
+9) Check Requirements에서 Visual C++ Redistributable Package가 필요함
+   => Execute 버튼을 눌러서 필요한 Redistributable Package들을 설치할 수 있음
+10) Installation에서 "Execute"버튼을 클릭하면 설치시작
+11) Type and Networking에서 아래의 사항들을 선택 후, "Next"버튼 클릭
+- Config Type을 "Development Computer"을 선택
+- TCP/IP Port를 변경할 수 있음. 그대로 둬라.
+12) Authentication Method에서 "Use Strong Password Encryption for Authentication"을 선택
+13) Accounts and Roles에서
+- Root Password를 설정
+- Additional User를 등록가능
+  USER Name: 입력
+  Host: <All Hosts (%)>
+  Role: DB Admin
+  Password: 입력
+14) Windows Service
+- 윈도우 서비스로 등록 여부 결정: "Standard System Account"로 서비스를 사용하도록 함.
+15) Apply Configuration에서 "Excute"버튼 클릭
+16) Connect To Server에서 Password를 입력하여 연결 테스트
+17) 윈도우 서비스에서 "MySQL80"이 실행 중인지 확인
+
+2. 데이터베이스와 계정 생성하기
+1) 현재 데이터베이스 확인하기
+: show databases;
+2) 데이터베이스 생성하기
+: create database[또는 schema] testdb;
+3) 데이터베이스 한글 설정
+: create database[또는 schema] testdb default character set utf8;
+4) 데이터베이스 삭제
+: drop database testdb
+5) 계정 생성
+- 현재의 사용자 목록 확인
+use mysql;
+select * from user;
+
+- Option 1: DDL 명령어로 사용자 추가하기
+create user 사용자id; # 사용자만 추가
+create user 사용자id@localhost identified by '비밀번호'; # 비번을 함께 설정 추가
+create user 'userid'@'%' identified by 'password'; # 외부('%')에서 접근을 허용
+
+- Option 2: SQL 명령어로 사용자 추가하기
+use mysql;
+insert into user(Host, User, Password) values('localhost', 'userid', password('password'));
+insert into user(Host, User, Password) values('%', 'userid', password('password'));
+
+6) 데이터베이스 사용 권한 부여하기
+- 모든 권한 부여하기
+grant all privileges on *.* to userid@host; #모든 DB의 모든 테이블
+grant all privileges on dbname.* to userid@host; # 특정 DB의 모든 테이블
+grant all privileges on dbname.* to userid@host identified by 'password'; # 권한 설정 및 비번 변경
+grant all privileges on dbname.tablename to userid@'%' identified by 'password'; # 권한 설정 및 비번 변경
+grant select, insert, update on dbname.* to userid@host identified by 'password'; # 권한 설정 및 비번 변경
+flush privileges; # 권한 변경을 적용
+- 권한 삭제하기
+revoke all on dbname.tablename from userid;
+- 계정 삭제하기
+drop user userid@'%';
+
+3. 도구
+1) MySQL Workbench
+- Query창에서 명령어를 치고, ctrl + enter
+2) MySQL Command Line Client
+- 현재 데이터베이스 확인하기 => master database는 "mysql"임
+mysql> show databases;
++--------------------+
+ | Database           |
++--------------------+
+ | information_schema |
+ | mysql              |
+ | performance_schema |
+ | sakila             |
+ | sys                |
+ | world              |
++--------------------+
+6 rows in set (0.00 sec)
+- 특정 데이터베이스를 사용하기
+mysql> use sakila;
+Database changed
+- 테이블 정보 확인하기
+mysql> show tables;
++----------------------------+
+| Tables_in_sakila           |
++----------------------------+
+| actor                      |
+| actor_info                 |
+| address                    |
+| category                   |
+| city                       |
+| country                    |
+| customer                   |
+| customer_list              |
+| film                       |
+| film_actor                 |
+| film_category              |
+| film_list                  |
+| film_text                  |
+| inventory                  |
+| language                   |
+| nicer_but_slower_film_list |
+| payment                    |
+| rental                     |
+| sales_by_film_category     |
+| sales_by_store             |
+| staff                      |
+| staff_list                 |
+| store                      |
++----------------------------+
+23 rows in set (0.01 sec)
+- 테이블 데이터 조회하기
+mysql> select * from actor;
+
+3) MySQL Shell 
+
+4. 데이터베이스 생성, 사용자 추가 및 권한 설정
+1) 데이터 쿼리
+show databases;
+use sakila;
+show tables;
+select * from actor;
+2) 데이터베이스 생성
+- Database 생성
+create database codezero default character set utf8;
+- 사용자 추가하기
+create user aitech@'%' identified by '1234';
+- 권한 
+grant all privileges on codezero.* to aitech@'%'; # 모든 테이블에 대한 권한
+
+
